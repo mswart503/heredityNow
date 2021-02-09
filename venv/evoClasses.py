@@ -26,12 +26,24 @@ class Animal():
 
         # checks for obstacles and moves at least 5 px away
         is_there_obstacle = False
-        sight = pygame.Rect(self.x-self.sight_distance, self.y+self.sight_distance, self.height+(self.sight_distance*2), self.width(self.sight_distance*2))
-        for obstacle in obstacles:
-            if pygame.Rect.colliderect(sight, obstacle.rect):
-                if pygame.Rect.colliderect()
+        sight = pygame.Rect(self.x-self.sight_distance, self.y+self.sight_distance, self.height+(self.sight_distance*2), self.width+(self.sight_distance*2))
+        if obstacles:
+            for obstacle in obstacles:
+                if pygame.Rect.colliderect(sight, obstacle.rect):
+                    too_close = pygame.Rect(self.x-5, self.y+5, self.width+10, self.height+10)
+                    if pygame.Rect.colliderect(too_close, obstacle):
+                        is_there_obstacle = True
+                        if self.x > obstacle.x:
+                            self.x = self.x + 1
+                        if self.x < obstacle.x:
+                            self.x = self.x - 1
+                        if self.y > obstacle.y:
+                            self.y = self.y + 1
+                        if self.y < obstacle.x:
+                            self.y = self.y - 1
+                        break
 
-        if not is_there_obstacle:
+        if is_there_obstacle == False:
             # If no visible obstacles, go straight at the target
             if self.x > target_x:
                 self.x = self.x - 1

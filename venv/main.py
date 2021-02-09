@@ -21,7 +21,7 @@ def main():
     time = 0
     time_list = []
     count = 0
-    while count < 100:
+    while count < 1000:
         num = count*random.randint(1,100)
         time_list.append(num)
         count += 1
@@ -37,8 +37,6 @@ def main():
                 pos = pygame.mouse.get_pos()
                 sheep = create_a_sheep()
                 animals_to_draw.append(sheep)
-                #grass = grow_grass()
-                #plants_to_draw.append(grass)
 
         if time in time_list:
             grass = grow_grass()
@@ -55,7 +53,9 @@ def redraw_window(win, animals_to_draw, plants_to_draw):
         animal, closest_grass = check_if_found_grass(closest_grass, animal)
         if closest_grass.foliage <= 0:
             plants_to_draw.remove(closest_grass)
-        animal.move(closest_grass.x, closest_grass.y, animals_to_draw)
+        other_animals = animals_to_draw.copy()
+        other_animals.remove(animal)
+        animal.move(closest_grass.x, closest_grass.y, other_animals)
         animal.draw(win)
     for plant in plants_to_draw:
         plant.draw(win)
@@ -65,7 +65,7 @@ def redraw_window(win, animals_to_draw, plants_to_draw):
 def create_a_sheep():
     rand_x = random.randint(0, 1000-20)
     rand_y = random.randint(0, 600-20)
-    sheep = Animal("Sheep", rand_x, rand_y, 40, 30, 100, 5, 10)
+    sheep = Animal("Sheep", rand_x, rand_y, 40, 30, 100, 5, 5)
     return sheep
 
 def grow_grass():
