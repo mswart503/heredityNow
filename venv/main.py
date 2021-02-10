@@ -98,8 +98,10 @@ def find_closest_grass(animal, plants_to_draw):
 
 def check_if_found_grass(grass, animal):
     if pygame.Rect.colliderect(animal.rect, grass.rect):
-        grass = animal.eat(grass)
+        grass, still_full = animal.eat(grass)
+        #if not still_full:
         grass.change(animal)
+        animal.full_mouth = True
         return animal, grass, True
     else:
         return animal, grass, False

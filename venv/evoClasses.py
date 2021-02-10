@@ -1,7 +1,7 @@
 import pygame
 
 class Animal():
-    def __init__(self, name, x, y, width, height, belly, mouth_size, sight_distance):
+    def __init__(self, name, x, y, width, height, belly, mouth_size, physical_sensitivity):
         self.name = name
         self.x = x
         self.y = y
@@ -16,10 +16,11 @@ class Animal():
             self.count+=1
         self.count = 0
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.sight_distance = sight_distance
-        self.sight_rect = pygame.Rect(self.x - self.sight_distance, self.y + self.sight_distance, self.height + (self.sight_distance * 2),
-                    self.width + (self.sight_distance * 2))
-
+        self.physical_sensitivity = physical_sensitivity
+        self.body_awareness = pygame.Rect(self.x - self.physical_sensitivity, self.y + self.physical_sensitivity, self.height + (self.physical_sensitivity * 2),
+                                          self.width + (self.physical_sensitivity * 2))
+        self.full_mouth = False
+        self.mouth_counter = 0
         #self.stats = False
 
     def draw(self, win):
@@ -38,13 +39,14 @@ class Animal():
         self.foliage = new_foliage
 
     def move(self, target_x, target_y, obstacles):
-
         # checks for obstacles and moves at least 5 px away
         is_there_obstacle = False
-        self.sight_rect = pygame.Rect(self.x-self.sight_distance, self.y+self.sight_distance, self.height+(self.sight_distance*2), self.width+(self.sight_distance*2))
+        self.body_awareness = pygame.Rect(self.x - self.physical_sensitivity, self.y + self.physical_sensitivity,
+                                          self.height + (self.physical_sensitivity * 2),
+                                          self.width + (self.physical_sensitivity * 2))
         if obstacles:
             for obstacle in obstacles:
-                if pygame.Rect.colliderect(self.sight_rect, obstacle.rect):
+                if pygame.Rect.colliderect(self.body_awareness, obstacle.rect):
                     too_close = pygame.Rect(self.x-5, self.y+5, self.width+10, self.height+10)
                     if pygame.Rect.colliderect(too_close, obstacle):
                         is_there_obstacle = True
@@ -74,8 +76,15 @@ class Animal():
                 self.belly = self.belly-1
 
     def eat(self, plant_to_eat):
-        self.belly = self.belly+self.mouth_size
-        return plant_to_eat
+        if self.full_mouth:
+            self.mouth_counter = self.mouth_counter +1
+            if self.mouth_counter == 100:
+                self.full_mouth = False
+                self.mouth_counter = 0
+            return plant_to_eat, True
+        else:
+            self.belly = self.belly+self.mouth_size
+            return plant_to_eat, False
 
 
 
