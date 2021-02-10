@@ -49,10 +49,14 @@ def redraw_window(win, animals_to_draw, plants_to_draw):
     win.blit(bg, (0, 0))
 
     for animal in animals_to_draw:
+        # the animal finds the closest grass
         closest_grass = find_closest_grass(animal, plants_to_draw)
-        animal, closest_grass = check_if_found_grass(closest_grass, animal)
+        animal, closest_grass, eating = check_if_found_grass(closest_grass, animal)
+        if eating:
+            closest_grass.draw(win)
         if closest_grass.foliage <= 0:
-            plants_to_draw.remove(closest_grass)
+            if closest_grass in plants_to_draw:
+                plants_to_draw.remove(closest_grass)
         other_animals = animals_to_draw.copy()
         other_animals.remove(animal)
         animal.move(closest_grass.x, closest_grass.y, other_animals)
@@ -65,19 +69,19 @@ def redraw_window(win, animals_to_draw, plants_to_draw):
 def create_a_sheep():
     rand_x = random.randint(0, 1000-20)
     rand_y = random.randint(0, 600-20)
-    sheep = Animal("Sheep", rand_x, rand_y, 40, 30, 100, 5, 5)
+    sheep = Animal("Sheep", rand_x, rand_y, 40, 30, 100, 1, 10)
     return sheep
 
 def grow_grass():
     rand_x = random.randint(0, 1000-20)
     rand_y = random.randint(0, 600-20)
-    grass = Plant("Grass", rand_x, rand_y, 15, 25, 50)
+    grass = Plant("Grass", rand_x, rand_y, 15, 25, random.randint(2,15))
     return grass
 
 def find_closest_grass(animal, plants_to_draw):
-    final_plant = 0
+    final_plant = Plant("None", 0, 0, 0, 0, 0)
     for plant in plants_to_draw:
-        if final_plant == 0:
+        if final_plant.name == "None":
             final_plant = plant
         else:
             cur_x_distance = abs(final_plant.x - animal.x)
@@ -95,9 +99,10 @@ def find_closest_grass(animal, plants_to_draw):
 def check_if_found_grass(grass, animal):
     if pygame.Rect.colliderect(animal.rect, grass.rect):
         grass = animal.eat(grass)
-        return animal, grass
+        grass.change(animal)
+        return animal, grass, True
     else:
-        return animal, grass
+        return animal, grass, False
 
 
 main()

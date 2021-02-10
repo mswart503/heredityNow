@@ -17,19 +17,34 @@ class Animal():
         self.count = 0
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.sight_distance = sight_distance
+        self.sight_rect = pygame.Rect(self.x - self.sight_distance, self.y + self.sight_distance, self.height + (self.sight_distance * 2),
+                    self.width + (self.sight_distance * 2))
+
+        #self.stats = False
 
     def draw(self, win):
+        #self.change()
         body = pygame.Rect(self.x, self.y, self.width, self.height)
         pygame.draw.rect(win,(235,235,235),body)
+        #if self.stats == True:
+
+    def change(self):
+        cur_width = self.width
+        cur_height = self.height
+        self.width = 2*new_foliage
+        self.height = 3*new_foliage
+        self.x = self.x+((cur_width-self.width)/2)
+        self.y = self.y+((cur_height-self.height)/2)
+        self.foliage = new_foliage
 
     def move(self, target_x, target_y, obstacles):
 
         # checks for obstacles and moves at least 5 px away
         is_there_obstacle = False
-        sight = pygame.Rect(self.x-self.sight_distance, self.y+self.sight_distance, self.height+(self.sight_distance*2), self.width+(self.sight_distance*2))
+        self.sight_rect = pygame.Rect(self.x-self.sight_distance, self.y+self.sight_distance, self.height+(self.sight_distance*2), self.width+(self.sight_distance*2))
         if obstacles:
             for obstacle in obstacles:
-                if pygame.Rect.colliderect(sight, obstacle.rect):
+                if pygame.Rect.colliderect(self.sight_rect, obstacle.rect):
                     too_close = pygame.Rect(self.x-5, self.y+5, self.width+10, self.height+10)
                     if pygame.Rect.colliderect(too_close, obstacle):
                         is_there_obstacle = True
@@ -59,10 +74,7 @@ class Animal():
                 self.belly = self.belly-1
 
     def eat(self, plant_to_eat):
-        final_foliage = plant_to_eat.foliage - self.mouth_size
-        foliage_eaten = plant_to_eat.foliage - final_foliage
-        self.belly = self.belly+foliage_eaten
-        plant_to_eat.foliage = plant_to_eat.foliage-foliage_eaten
+        self.belly = self.belly+self.mouth_size
         return plant_to_eat
 
 
@@ -72,16 +84,30 @@ class Plant():
         self.name = name
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
         self.foliage = foliage
+        self.width = 2*self.foliage
+        self.height = 3*self.foliage
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
 
-    def draw(self, win):
+    def draw(self, win, new_size=""):
+        #if new_size != "":
+            #self.x
+
+        #self.width = 2*self.foliage
+        #self.height = 3*self.foliage
         body = pygame.Rect(self.x, self.y, self.width, self.height)
         pygame.draw.rect(win, (15, 112, 4), body)
 
+    def change(self, animal):
+        new_foliage = self.foliage - animal.mouth_size
+        cur_width = self.width
+        cur_height = self.height
+        self.width = 2*new_foliage
+        self.height = 3*new_foliage
+        self.x = self.x+((cur_width-self.width)/2)
+        self.y = self.y+((cur_height-self.height)/2)
+        self.foliage = new_foliage
 
 class Button():
     def __init__(self, text, x, y, width, height):
