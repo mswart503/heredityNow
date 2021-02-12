@@ -7,24 +7,25 @@ bg = pygame.image.load("field.png") # Credit http://pixelartmaker.com/art/41ac4f
 yellow = (12,150,78)
 
 def main():
-    pygame.display.set_caption('Evolution v0.1')
+    pygame.display.set_caption('Heredity Now v0.2')
     screenwidth = 1000
     screenheight = 600
     win = pygame.display.set_mode((screenwidth, screenheight))
     win.blit(bg, (0, 0))
-    #area = Area()
+    area = Area(0,0,screenwidth,screenheight)
+    area.create_area(win, 20)
     pygame.display.flip()
     sheep = create_a_sheep()
     grass = grow_grass()
     animals_to_draw = [sheep]
     plants_to_draw = [grass]
-    #sheep.draw(win)
+    sheep.draw(win)
     time = 0
     time_list = []
     count = 0
     while count < 1000:
-        num = count*random.randint(1,100)
-        time_list.append(num)
+        #num = count*random.randint(1,100)
+        time_list.append(count*10)
         count += 1
 
     # game loop
@@ -39,20 +40,25 @@ def main():
                 sheep = create_a_sheep()
                 animals_to_draw.append(sheep)
 
+        # controls how grass is added to the field
+        #    grass = grow_grass()
+        #    plants_to_draw.append(grass)
         if time in time_list:
-            grass = grow_grass()
-            plants_to_draw.append(grass)
-
-        redraw_window(win, animals_to_draw, plants_to_draw)
+            plants_to_draw = area.check_for_growth()
+        redraw_window(win, animals_to_draw, plants_to_draw, area)
 
 
-def redraw_window(win, animals_to_draw, plants_to_draw):
-    win.blit(bg, (0, 0))
-
+def redraw_window(win, animals_to_draw, plants_to_draw, area):
+    #win.blit(bg, (0, 0))
+    area.draw_area(win)
+    for plant in plants_to_draw:
+        if plant:
+            plant.draw(win)
     for animal in animals_to_draw:
         # the animal finds the closest grass
-        closest_grass = find_closest_grass(animal, plants_to_draw)
-        animal, closest_grass, eating = check_if_found_grass(closest_grass, animal)
+        if animal.target == None:
+            animal.target = find_closest_grass(animal, plants_to_draw)
+        animal, closest_grass, eating = check_if_found_grass(animal.target, animal)
         if eating:
             closest_grass.draw(win)
         if closest_grass.foliage <= 0:
@@ -62,8 +68,7 @@ def redraw_window(win, animals_to_draw, plants_to_draw):
         other_animals.remove(animal)
         animal.move(closest_grass.x, closest_grass.y, other_animals)
         animal.draw(win)
-    for plant in plants_to_draw:
-        plant.draw(win)
+
 
     pygame.display.flip()
 
@@ -82,7 +87,9 @@ def grow_grass():
 def find_closest_grass(animal, plants_to_draw):
     final_plant = Plant("None", 0, 0, 0, 0, 0)
     for plant in plants_to_draw:
-        if final_plant.name == "None":
+        if plant == None:
+            pass
+        elif final_plant.name == "None":
             final_plant = plant
         else:
             cur_x_distance = abs(final_plant.x - animal.x)
