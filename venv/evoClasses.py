@@ -19,7 +19,8 @@ class Animal:
         self.physical_sensitivity = physical_sensitivity
         self.body_awareness = pygame.Rect(self.x - self.physical_sensitivity, self.y + self.physical_sensitivity, self.height + (self.physical_sensitivity * 2),
                                           self.width + (self.physical_sensitivity * 2))
-
+        self.sight = 20
+        self.sight_radius = pygame.Rect(self.x-self.sight,self.y-self.sight,self.width+(self.sight*2), self.height+((self.sight*2)))
         self.full_mouth = False
         self.mouth_counter = 0
         self.target = None
@@ -28,6 +29,7 @@ class Animal:
     def draw(self, win):
         #self.change()
         body = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.sight_radius = pygame.Rect(self.x-self.sight,self.y-self.sight,self.width+(self.sight*2), self.height+((self.sight*2)))
         pygame.draw.rect(win,(235,235,235),body)
         #if self.stats == True:
 

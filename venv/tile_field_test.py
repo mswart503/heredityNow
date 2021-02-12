@@ -89,18 +89,20 @@ def find_closest_grass(animal, plants_to_draw):
     for plant in plants_to_draw:
         if plant == None:
             pass
-        elif final_plant.name == "None":
-            final_plant = plant
-        else:
-            cur_x_distance = abs(final_plant.x - animal.x)
-            cur_y_distance = abs(final_plant.y - animal.y)
-            cur_total_distance = cur_x_distance + cur_y_distance
-            new_x_distance = abs(plant.x - animal.x)
-            new_y_distance = abs(plant.y - animal.y)
-            new_total_distance = new_x_distance + new_y_distance
+        elif pygame.Rect.colliderect(plant.rect, animal.sight_radius):
 
-            if cur_total_distance > new_total_distance:
+            if final_plant.name == "None":
                 final_plant = plant
+            else:
+                cur_x_distance = abs(final_plant.x - animal.x)
+                cur_y_distance = abs(final_plant.y - animal.y)
+                cur_total_distance = cur_x_distance + cur_y_distance
+                new_x_distance = abs(plant.x - animal.x)
+                new_y_distance = abs(plant.y - animal.y)
+                new_total_distance = new_x_distance + new_y_distance
+
+                if cur_total_distance > new_total_distance:
+                    final_plant = plant
 
     return final_plant
 
